@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>瑞斯伟驭光平台 - 图片检测（暖色主题·同色系阴影版）</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+      background: #F8F9FA;
+      min-width: 1400px;
+      color: #2C3E50;
+    }
+    
+    /* ========== 顶部导航栏 ========== */
+    .tech-navbar {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      height: 64px;
+      padding: 0 48px;
+      background: 
+        linear-gradient(180deg, rgba(255,152,0,0.08) 0%, transparent 2px),
+        linear-gradient(180deg, transparent calc(100% - 1px), rgba(200,120,40,0.12) 100%),
+        linear-gradient(90deg, 
+          #FFFFFF 0%, 
+          #FFF8F0 15%,
+          #FFE8CC 50%, 
+          #FFF8F0 85%,
+          #FFFFFF 100%);
+      box-shadow: 
+        inset 0 1px 0 rgba(255,193,102,0.25),
+        0 4px 20px rgba(200,120,40,0.12);
+      z-index: 1000;
+    }
+    
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-right: 80px;
+      z-index: 30;
+    }
+    
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 4px 12px rgba(255,152,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .platform-name {
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #FF9800, #FFA726);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+    
+    .nav-menu {
+      display: flex;
+      align-items: stretch;
+      gap: 4px;
+      flex: 1;
+      z-index: 20;
+    }
+    
+    .nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 40px;
+      color: rgba(90,108,125,0.75);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      user-select: none;
+    }
+    
+    .nav-item:not(.active):hover {
+      color: rgba(44,62,80,0.95);
+    }
+    
+    .nav-item:not(.active):hover::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: -2px;
+      right: -2px;
+      background: 
+        linear-gradient(180deg, rgba(255,193,102,0.15) 0%, transparent 100%),
+        rgba(255,235,205,0.45);
+      clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+      z-index: -1;
+    }
+    
+    .nav-item.active {
+      color: #1a1a1a;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    }
+    
+    /* 🔥 导航栏和侧边栏统一斜切样式 - 同色系阴影 */
+    .nav-item.active::before,
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(180deg, 
+          rgba(255,152,0,0.50) 0%, 
+          rgba(255,167,38,0.42) 20%,
+          rgba(255,183,77,0.35) 45%,
+          rgba(255,193,102,0.28) 70%,
+          rgba(255,203,127,0.22) 100%),
+        linear-gradient(135deg, 
+          rgba(255,152,0,0.65) 0%, 
+          rgba(255,167,38,0.58) 40%,
+          rgba(255,183,77,0.50) 100%);
+      clip-path: polygon(18px 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+      box-shadow: 
+        inset 0 2px 0 rgba(255,220,120,0.70),
+        inset 2px 0 0 rgba(255,193,102,0.35),
+        inset -2px 0 0 rgba(255,193,102,0.35),
+        inset 0 -2px 0 rgba(200,120,40,0.30),
+        inset 8px 0 16px rgba(200,120,40,0.18),
+        inset -8px 0 16px rgba(200,120,40,0.18),
+        0 0 24px rgba(255,152,0,0.30),
+        0 4px 12px rgba(255,152,0,0.20);
+      z-index: -1;
+    }
+    
+    .nav-item.active::after,
+    .menu-item.active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: 
+        radial-gradient(ellipse at 50% 0%, 
+          rgba(255,220,120,1) 0%, 
+          rgba(255,193,102,0.85) 20%,
+          rgba(255,167,38,0.65) 40%,
+          rgba(255,152,0,0.40) 60%,
+          transparent 80%);
+      clip-path: polygon(18px 0, calc(100% - 18px) 0, calc(100% - 16px) 100%, 16px 100%);
+      filter: blur(1.5px);
+      z-index: 2;
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    
+    .nav-item.active i {
+      opacity: 1;
+      filter: drop-shadow(0 1px 2px rgba(255,255,255,0.5));
+    }
+    
+    .user-section {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      z-index: 30;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      color: #2C3E50;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255,152,0,0.25);
+      border-radius: 6px;
+      background: 
+        linear-gradient(180deg, 
+          rgba(255,248,240,0.60) 0%, 
+          rgba(255,235,205,0.70) 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(255,152,0,0.08);
+    }
+    
+    .user-info:hover {
+      background: 
+        linear-gradient(180deg, 
+          rgba(255,243,224,0.80) 0%, 
+          rgba(255,228,196,0.90) 100%);
+      border-color: rgba(255,152,0,0.40);
+      box-shadow: 0 4px 12px rgba(255,152,0,0.15);
+    }
+    
+    /* ========== 主容器 ========== */
+    .main-container {
+      display: flex;
+      height: calc(100vh - 64px);
+    }
+    
+    /* ========== 侧边栏 ========== */
+    .sidebar {
+      width: 240px;
+      background: 
+        linear-gradient(180deg, 
+          rgba(255,248,240,0.85) 0%, 
+          rgba(255,243,230,0.92) 100%);
+      border-right: 1px solid rgba(255,152,0,0.15);
+      overflow-y: auto;
+    }
+    
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+    
+    .menu-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      margin: 4px 12px;
+      color: rgba(90,108,125,0.80);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    .menu-item:hover {
+      color: rgba(44,62,80,0.95);
+    }
+    
+    .menu-item:hover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(90deg, rgba(255,193,102,0.18) 0%, transparent 100%),
+        rgba(255,235,205,0.40);
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+      z-index: -1;
+    }
+    
+    .menu-item.active {
+      color: #1a1a1a;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    }
+    
+    /* 侧边栏使用与导航栏完全相同的 ::before 和 ::after（已在上面统一定义） */
+    
+    .menu-item i {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
+      opacity: 0.85;
+    }
+    
+    .menu-item.active i {
+      opacity: 1;
+      filter: drop-shadow(0 1px 2px rgba(255,255,255,0.5));
+    }
+    
+    /* ========== 内容区 ========== */
+    .content-area {
+      flex: 1;
+      background: #F8F9FA;
+      overflow-y: auto;
+    }
+    
+    .breadcrumb {
+      padding: 20px 32px 0 32px;
+      font-size: 13px;
+      color: rgba(141,110,99,0.70);
+    }
+    
+    .breadcrumb span {
+      margin: 0 6px;
+      color: rgba(141,110,99,0.50);
+    }
+    
+    .breadcrumb .current {
+      color: #FF9800;
+      font-weight: 600;
+    }
+    
+    .content-wrapper {
+      padding: 24px 32px 32px 32px;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2C3E50;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .page-title i {
+      color: #FF9800;
+    }
+    
+    /* ========== 分隔线 ========== */
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,152,0,0.15) 5%,
+        rgba(255,167,38,0.30) 50%,
+        rgba(255,152,0,0.15) 95%,
+        transparent 100%);
+      box-shadow: 0 0 10px rgba(255,152,0,0.20);
+      margin: 32px 0;
+    }
+    
+    /* ========== 区域标题 ========== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      position: relative;
+      padding-bottom: 12px;
+    }
+    
+    .section-header::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 120px;
+      background: linear-gradient(90deg,
+        rgba(255,152,0,0.5) 0%,
+        transparent 100%);
+    }
+    
+    .section-header i {
+      font-size: 20px;
+      color: #FF9800;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2C3E50;
+    }
+    
+    /* ========== 检测输入区域 ========== */
+    .detection-input-section {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    
+    .config-panel {
+      background: rgba(255,248,240,0.65);
+      border: 1px solid rgba(255,152,0,0.18);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(255,152,0,0.08);
+    }
+    
+    .config-group {
+      margin-bottom: 24px;
+    }
+    
+    .config-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .config-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #5A6C7D;
+      margin-bottom: 8px;
+    }
+    
+    .config-select {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,152,0,0.22);
+      border-radius: 6px;
+      color: #2C3E50;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    
+    .config-select:focus {
+      outline: none;
+      border-color: #FF9800;
+      box-shadow: 0 0 0 3px rgba(255,152,0,0.15);
+    }
+    
+    .config-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,152,0,0.18);
+      border-radius: 6px;
+    }
+    
+    .switch-label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .switch-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2C3E50;
+    }
+    
+    .switch-desc {
+      font-size: 11px;
+      color: #8D6E63;
+    }
+    
+    .switch-button {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: rgba(255,152,0,0.22);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .switch-button::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #FFF;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(200,120,40,0.25);
+      transition: all 0.3s;
+    }
+    
+    .switch-button.active {
+      background: linear-gradient(135deg, #FF9800, #FFA726);
+    }
+    
+    .switch-button.active::after {
+      left: 25px;
+    }
+    
+    .slider-container {
+      margin-top: 12px;
+    }
+    
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .slider-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #FF9800;
+    }
+    
+    .slider {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,152,0,0.18);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #FF9800, #FFA726);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,152,0,0.35);
+    }
+    
+    .slider-range {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #8D6E63;
+    }
+    
+    .detect-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #FF9800 0%, #FFA726 50%, #FFB74D 100%);
+      border: none;
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 14px rgba(255,152,0,0.30);
+    }
+    
+    .detect-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255,152,0,0.40);
+    }
+    
+    .upload-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .upload-area {
+      flex: 1;
+      border: 2px dashed rgba(255,152,0,0.35);
+      border-radius: 12px;
+      background: rgba(255,248,240,0.45);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .upload-area:hover {
+      border-color: rgba(255,152,0,0.55);
+      background: rgba(255,248,240,0.65);
+    }
+    
+    .upload-icon {
+      font-size: 64px;
+      color: rgba(255,152,0,0.45);
+      margin-bottom: 16px;
+    }
+    
+    .upload-text {
+      font-size: 15px;
+      color: #5A6C7D;
+      margin-bottom: 8px;
+    }
+    
+    .upload-hint {
+      font-size: 12px;
+      color: #8D6E63;
+    }
+    
+    .upload-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .upload-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,152,0,0.22);
+      border-radius: 6px;
+      color: #FF9800;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    
+    .upload-btn:hover {
+      background: rgba(255,152,0,0.10);
+      border-color: rgba(255,152,0,0.40);
+      box-shadow: 0 2px 8px rgba(255,152,0,0.12);
+    }
+    
+    /* ========== 检测结果 ========== */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .result-card {
+      background: rgba(255,248,240,0.55);
+      border: 1px solid rgba(255,152,0,0.18);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .result-card:hover {
+      border-color: rgba(255,152,0,0.35);
+      box-shadow: 0 8px 28px rgba(255,152,0,0.18);
+    }
+    
+    .result-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #FFF8F0, #FFE8CC);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,152,0,0.35);
+      font-size: 48px;
+    }
+    
+    .result-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2C3E50;
+      margin-bottom: 12px;
+    }
+    
+    .result-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    
+    .info-label {
+      color: #8D6E63;
+    }
+    
+    .info-value {
+      color: #2C3E50;
+      font-weight: 600;
+    }
+    
+    /* ========== 缺陷表格 ========== */
+    .defect-table {
+      width: 100%;
+      background: rgba(255,248,240,0.55);
+      border: 1px solid rgba(255,152,0,0.18);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    
+    .defect-table thead {
+      background: rgba(255,152,0,0.15);
+    }
+    
+    .defect-table th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: #5A6C7D;
+    }
+    
+    .defect-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #2C3E50;
+      border-top: 1px solid rgba(255,152,0,0.12);
+    }
+    
+    .defect-id {
+      color: #FF9800;
+      font-weight: 600;
+    }
+    
+    .severity-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .severity-high {
+      background: rgba(244,67,54,0.18);
+      color: #D32F2F;
+      border: 1px solid rgba(244,67,54,0.25);
+    }
+    
+    .severity-medium {
+      background: rgba(255,152,0,0.18);
+      color: #E65100;
+      border: 1px solid rgba(255,152,0,0.25);
+    }
+    
+    .severity-low {
+      background: rgba(76,175,80,0.18);
+      color: #388E3C;
+      border: 1px solid rgba(76,175,80,0.25);
+    }
+    
+    /* ========== 操作按钮 ========== */
+    .results-actions {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,152,0,0.22);
+      border-radius: 8px;
+      color: #FF9800;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .action-btn:hover {
+      background: rgba(255,152,0,0.10);
+      border-color: rgba(255,152,0,0.40);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(255,152,0,0.18);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <nav class="tech-navbar">
+    <div class="logo-section">
+      <div class="logo-img">R</div>
+      <span class="platform-name">瑞斯伟驭光平台</span>
+    </div>
+    
+    <div class="nav-menu">
+      <div class="nav-item active">
+        <i class="fas fa-search"></i>
+        <span>检测中心</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-wrench"></i>
+        <span>运维中心</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-bolt"></i>
+        <span>发电监控</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span>管理中心</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-database"></i>
+        <span>数据中心</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-drone"></i>
+        <span>无人机中心</span>
+      </div>
+    </div>
+    
+    <div class="user-section">
+      <div class="user-info">
+        <span>Rsw202604</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主容器 -->
+  <div class="main-container">
+    
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-menu">
+        <div class="menu-item active">
+          <i class="fas fa-image"></i>
+          <span>图片检测</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-video"></i>
+          <span>视频检测</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-broadcast-tower"></i>
+          <span>实时检测</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-clipboard-list"></i>
+          <span>识别记录</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 内容区 -->
+    <main class="content-area">
+      
+      <div class="breadcrumb">
+        首页<span>/</span>检测中心<span>/</span><span class="current">图片检测</span>
+      </div>
+
+      <div class="content-wrapper">
+        
+        <h1 class="page-title">
+          <i class="fas fa-image"></i>
+          图片检测
+        </h1>
+        
+        <!-- 检测配置区域 -->
+        <div class="section-header">
+          <i class="fas fa-sliders-h"></i>
+          <span class="section-title">检测配置</span>
+        </div>
+        
+        <div class="detection-input-section">
+          <!-- 配置面板 -->
+          <div class="config-panel">
+            <div class="config-group">
+              <label class="config-label">检测模型</label>
+              <select class="config-select">
+                <option>IR-RFDETR-B-0.888 (推荐)</option>
+                <option>YOLOv8-Crack-Detection</option>
+                <option>Faster-RCNN-ResNet50</option>
+                <option>SSD-MobileNet-V2</option>
+              </select>
+            </div>
+
+            <div class="config-group">
+              <div class="config-switch">
+                <div class="switch-label">
+                  <div class="switch-title">精密检测模式(SAHI)</div>
+                  <div class="switch-desc">切分图像进行多分辨率检测,提高小目标识别率</div>
+                </div>
+                <div class="switch-button active" onclick="this.classList.toggle('active')"></div>
+              </div>
+            </div>
+
+            <div class="config-group">
+              <label class="config-label">置信度阈值</label>
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>灵敏度</span>
+                  <span class="slider-value" id="confidenceValue">50%</span>
+                </div>
+                <input type="range" class="slider" min="10" max="100" value="50" id="confidenceSlider">
+                <div class="slider-range">
+                  <span>0.1 (低灵敏)</span>
+                  <span>1.0 (高灵敏)</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="detect-button">
+              <i class="fas fa-play-circle"></i>
+              开始智能检测
+            </button>
+          </div>
+
+          <!-- 上传面板 -->
+          <div class="upload-panel">
+            <div class="upload-area">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="upload-text">拖拽图片至此区域 或 点击上传</div>
+              <div class="upload-hint">支持格式: JPG / PNG / BMP / TIFF (单张不超过20MB)</div>
+            </div>
+            <div class="upload-actions">
+              <button class="upload-btn">
+                <i class="fas fa-file-image"></i> 单张上传
+              </button>
+              <button class="upload-btn">
+                <i class="fas fa-folder-open"></i> 批量上传
+              </button>
+              <button class="upload-btn">
+                <i class="fas fa-history"></i> 查看批次
+              </button>
+              <button class="upload-btn">
+                <i class="fas fa-chart-line"></i> 效果对比
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 检测结果 -->
+        <div class="section-header">
+          <i class="fas fa-check-circle"></i>
+          <span class="section-title">检测结果</span>
+        </div>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-image">
+              <i class="fas fa-image"></i>
+            </div>
+            <div class="result-title">原始图片</div>
+            <div class="result-info">
+              <div class="info-item">
+                <span class="info-label">尺寸</span>
+                <span class="info-value">1920×1080</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">大小</span>
+                <span class="info-value">3.2MB</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-image">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="result-title">热力图结果</div>
+            <div class="result-info">
+              <div class="info-item">
+                <span class="info-label">耗时</span>
+                <span class="info-value">1.2s</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">置信度</span>
+                <span class="info-value">avg 89%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-image">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="result-title">缺陷标注</div>
+            <div class="result-info">
+              <div class="info-item">
+                <span class="info-label">检出数量</span>
+                <span class="info-value">5处</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">平均面积</span>
+                <span class="info-value">32 cm²</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 缺陷表格 -->
+        <table class="defect-table">
+          <thead>
+            <tr>
+              <th>缺陷ID</th>
+              <th>类型</th>
+              <th>严重程度</th>
+              <th>置信度</th>
+              <th>面积(cm²)</th>
+              <th>位置坐标</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="defect-id">#001</td>
+              <td>裂缝</td>
+              <td><span class="severity-badge severity-high">严重</span></td>
+              <td>92%</td>
+              <td>78.5</td>
+              <td>(245,380)-(512,420)</td>
+            </tr>
+            <tr>
+              <td class="defect-id">#002</td>
+              <td>裂缝</td>
+              <td><span class="severity-badge severity-medium">中等</span></td>
+              <td>88%</td>
+              <td>45.2</td>
+              <td>(680,150)-(820,180)</td>
+            </tr>
+            <tr>
+              <td class="defect-id">#003</td>
+              <td>剥落</td>
+              <td><span class="severity-badge severity-medium">中等</span></td>
+              <td>85%</td>
+              <td>32.8</td>
+              <td>(1100,620)-(1240,680)</td>
+            </tr>
+            <tr>
+              <td class="defect-id">#004</td>
+              <td>裂缝</td>
+              <td><span class="severity-badge severity-low">轻微</span></td>
+              <td>76%</td>
+              <td>18.3</td>
+              <td>(420,900)-(510,920)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 操作按钮 -->
+        <div class="results-actions">
+          <button class="action-btn">
+            <i class="fas fa-file-pdf"></i>
+            下载检测报告
+          </button>
+          <button class="action-btn">
+            <i class="fas fa-file-export"></i>
+            导出原始数据
+          </button>
+          <button class="action-btn">
+            <i class="fas fa-layer-group"></i>
+            批量处理
+          </button>
+          <button class="action-btn">
+            <i class="fas fa-history"></i>
+            查看历史记录
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 置信度滑块
+    const slider = document.getElementById('confidenceSlider');
+    const sliderValue = document.getElementById('confidenceValue');
+    slider.addEventListener('input', (e) => {
+      sliderValue.textContent = e.target.value + '%';
+    });
+
+    // 导航栏切换
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+          nav.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+
+    // 侧边栏切换
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.menu-item').forEach(menu => {
+          menu.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

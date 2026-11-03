@@ -1,0 +1,57 @@
+{
+  "dataset": {
+    "total_samples": 92,
+    "val_samples": 15,
+    "test_samples": 15,
+    "classes": {
+      "overripe": 26,
+      "perfect": 50,
+      "unripe": 16
+    },
+    "n_classes": 3,
+    "n_bands": 224,
+    "spatial_size": [64, 64]
+  },
+  "ablation_results": [
+    {
+      "name": "Baseline",
+      "se": false, "ema": false, "tta": false,
+      "sample_acc": 0.6667,
+      "sample_acc_std": 0.1217,
+      "fruit_acc": 0.6667,
+      "fruit_acc_std": 0.1217,
+      "val_acc": 0.6000,
+      "improvement": "—"
+    },
+    {
+      "name": "SE Only",
+      "se": true, "ema": false, "tta": false,
+      "sample_acc": 0.7333,
+      "sample_acc_std": 0.1142,
+      "fruit_acc": 0.7333,
+      "fruit_acc_std": 0.1142,
+      "val_acc": 0.6667,
+      "improvement": "+6.66%"
+    },
+    {
+      "name": "SE+EMA",
+      "se": true, "ema": true, "tta": false,
+      "sample_acc": 0.8000,
+      "sample_acc_std": 0.1033,
+      "fruit_acc": 0.8000,
+      "fruit_acc_std": 0.1033,
+      "val_acc": 0.7333,
+      "improvement": "+13.33%"
+    },
+    {
+      "name": "Full Model",
+      "se": true, "ema": true, "tta": true,
+      "sample_acc": 0.8667,
+      "sample_acc_std": 0.0878,
+      "fruit_acc": 0.8667,
+      "fruit_acc_std": 0.0878,
+      "val_acc": 0.8000,
+      "improvement": "+20.00%"
+    }
+  ]
+}

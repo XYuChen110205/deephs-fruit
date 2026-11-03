@@ -1,0 +1,71 @@
+﻿# Models / weights
+*.pt
+*.pth
+*.onnx
+*.engine
+*.safetensors
+*.ckpt
+*.h5
+*.keras
+*.pkl
+*.joblib
+
+# Datasets / arrays
+*.npy
+*.npz
+*.hdr
+*.raw
+*.crdownload
+data/
+dataset/*.json
+**/dataset/train_all*.json
+**/dataset/train_only*.json
+**/measurement_series_*.py
+
+# Archives
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# Media
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+
+# Secrets
+.env
+*.env
+*secret*
+*token*
+*password*
+*credential*
+auth.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Environments / caches
+node_modules/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+GF/
+pgdata/
+backup/
+wandb/
+lightning_logs/
+.opencode/
+.cursor/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

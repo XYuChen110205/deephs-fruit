@@ -1,0 +1,54 @@
+{
+  "dataset": {
+    "total_samples": 92,
+    "n_bands": 224,
+    "n_classes": 3
+  },
+  "results": [
+    {
+      "name": "Baseline",
+      "attention": "none",
+      "ema": false,
+      "tta": false,
+      "sample_acc": 0.8,
+      "fruit_acc": 0.8462,
+      "val_acc": 0.9333
+    },
+    {
+      "name": "SE Only",
+      "attention": "se",
+      "ema": false,
+      "tta": false,
+      "sample_acc": 0.6667,
+      "fruit_acc": 0.6923,
+      "val_acc": 0.8
+    },
+    {
+      "name": "CA Only",
+      "attention": "ca",
+      "ema": false,
+      "tta": false,
+      "sample_acc": 0.3333,
+      "fruit_acc": 0.3077,
+      "val_acc": 0.3333
+    },
+    {
+      "name": "SE+EMA+TTA",
+      "attention": "se",
+      "ema": true,
+      "tta": true,
+      "sample_acc": 0.6667,
+      "fruit_acc": 0.6154,
+      "val_acc": 0.8667
+    },
+    {
+      "name": "CA+EMA+TTA",
+      "attention": "ca",
+      "ema": true,
+      "tta": true,
+      "sample_acc": 0.3333,
+      "fruit_acc": 0.3077,
+      "val_acc": 0.3333
+    }
+  ]
+}

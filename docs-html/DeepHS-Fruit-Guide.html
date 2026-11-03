@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>DeepHS-Fruit 复现指南</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #333;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+        h3 {
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .note {
+            margin: 15px 0;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>DeepHS-Fruit 复现指南</h1>
+<p>基于实际踩坑经验 | 2026-04-15</p>
+
+<hr>
+
+<h2>环境配置</h2>
+
+<h3>系统环境</h3>
+<ul>
+<li>操作系统：Windows 11</li>
+<li>GPU：NVIDIA GeForce RTX 4060 Laptop (8GB)</li>
+<li>CUDA：12.x</li>
+<li>Python：3.10.20</li>
+<li>虚拟环境：hyperspectral</li>
+</ul>
+
+<h3>安装命令</h3>
+
+<pre><code># 创建虚拟环境
+conda create -n hyperspectral python=3.10
+conda activate hyperspectral
+
+# 安装 PyTorch (CUDA 12.x)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# 安装依赖（注意版本！）
+pip install pytorch-lightning==2.6.1
+pip install scikit-learn==1.7.2
+pip install numpy pandas matplotlib seaborn spectral h5py tensorboard tqdm opencv-python Pillow wandb</code></pre>
+
+<div class="note">
+<strong>注意：</strong>原 requirements.txt 中的 pytorch-lightning==1.7.6 和 scikit-learn==1.0.2 版本太旧，必须使用上述新版本，否则会出现兼容性问题。
+</div>
+
+<hr>
+
+<h2>问题修复记录</h2>
+
+<p>共修复 7 个问题，以下是详细记录：</p>
+
+<h3>1. sklearn plot_confusion_matrix 导入错误</h3>
+<p><strong>文件：</strong>classification/utils/confusion_matrix.py</p>
+<p><strong>修改：</strong></p>
+<pre><code># 修改前
+from sklearn.metrics import plot_confusion_matrix, confusion_matrix, ConfusionMatrixDisplay
+
+# 修改后
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay</code></pre>
+
+<h3>2. pytorch_lightning seed_everything API 变化</h3>
+<p><strong>文件：</strong>classification/train.py（约第415行）</p>
+<pre><code># 修改前
+lightning.utilities.seed.seed_everything(seed)
+
+# 修改后
+lightning.seed_everything(seed)</code></pre>
+
+<h3>3. validation_epoch_end 被移除</h3>
+<p><strong>文件：</strong>classification/train.py</p>
+<pre><code># 修改前
+def validation_epoch_end(self, outputs):
+    ...
+
+# 修改后
+def on_validation_epoch_end(self):
+    ...</code></pre>
+
+<h3>4. test_epoch_end 被移除</h3>
+<p><strong>文件：</strong>classification/train.py</p>
+<pre><code># 修改前
+def test_epoch_end(self, outputs):
+    outputs = self.all_gather(outputs)
+    ...
+
+# 修改后
+def on_test_epoch_end(self):
+    if hasattr(self, 'test_step_outputs'):
+        outputs = self.all_gather(self.test_step_outputs)
+        ...
+        self.test_step_outputs.clear()
+
+# 同时需要在 __init__ 中添加：
+self.test_step_outputs = []
+
+# 在 test_step 中添加：
+self.test_step_outputs.append(output)</code></pre>
+
+<h3>5. DDP 分布式训练在 Windows 单卡上失败</h3>
+<p><strong>文件：</strong>classification/train.py</p>
+<pre><code># 修改前
+trainer = lightning.Trainer(
+    max_epochs=opt.num_epochs,
+    accelerator='gpu',
+    devices=-1,
+    strategy='ddp',
+    ...
+)
+
+# 修改后
+trainer = lightning.Trainer(
+    max_epochs=opt.num_epochs,
+    accelerator='gpu',
+    devices=1,
+    strategy='auto',
+    ...
+)</code></pre>
+
+<h3>6. Windows 多进程内存错误</h3>
+<p><strong>文件：</strong>classification/train.py</p>
+<pre><code># 修改前
+hparams['num_workers'] = 4 if not hparams['debug'] else 0
+
+# 修改后
+import platform
+if platform.system() == 'Windows':
+    hparams['num_workers'] = 0
+else:
+    hparams['num_workers'] = 4 if not hparams['debug'] else 0</code></pre>
+
+<h3>7. BatchNorm1d batch_size=1 错误</h3>
+<p><strong>文件：</strong>classification/models/deephs_net.py</p>
+<pre><code># 修改前
+self.fc = nn.Sequential(
+    nn.Sigmoid(),
+    nn.BatchNorm1d(hidden_layers[2]),
+    nn.Linear(hidden_layers[2], num_classes),
+)
+
+# 修改后
+self.fc = nn.Sequential(
+    nn.Sigmoid(),
+    nn.LayerNorm(hidden_layers[2]),
+    nn.Linear(hidden_layers[2], num_classes),
+)</code></pre>
+
+<hr>
+
+<h2>训练参数对比</h2>
+
+<table>
+<tr><th>参数</th><th>论文/官方</th><th>实际使用</th><th>说明</th></tr>
+<tr><td>--model</td><td>deephs_net</td><td>deephs_net</td><td>一致</td></tr>
+<tr><td>--fruit</td><td>avocado / kiwi</td><td>kaki</td><td>只下载了柿子数据</td></tr>
+<tr><td>--classification_type</td><td>ripeness</td><td>ripeness</td><td>一致</td></tr>
+<tr><td>--seed</td><td>23312323</td><td>42 / 23312323</td><td>先用42测试，后用论文seed</td></tr>
+<tr><td>--num_epochs</td><td>5000</td><td>50 / 200</td><td>逐步增加</td></tr>
+<tr><td>--batch_size</td><td>64</td><td>16</td><td>RTX 4060 8GB显存限制</td></tr>
+<tr><td>--lr</td><td>0.01</td><td>0.01</td><td>一致</td></tr>
+</table>
+
+<hr>
+
+<h2>训练命令</h2>
+
+<h3>快速测试</h3>
+<pre><code>python classification/train.py --data_path ./data --model deephs_net --fruit kaki --classification_type ripeness --seed 42 --num_epochs 50 --batch_size 16</code></pre>
+
+<h3>完整训练（推荐）</h3>
+<pre><code>python classification/train.py --data_path ./data --model deephs_net --fruit kaki --classification_type ripeness --seed 23312323 --num_epochs 200 --batch_size 16</code></pre>
+
+<hr>
+
+<h2>训练结果</h2>
+
+<h3>第一次训练（seed=42, epochs=50）</h3>
+<ul>
+<li>训练集：280 样本</li>
+<li>验证集：12 样本</li>
+<li>测试集：12 样本</li>
+<li>Best Val Loss：0.712（第18 epoch）</li>
+<li>Test Accuracy：50%</li>
+<li>Test Loss：1.32</li>
+</ul>
+
+<div class="note">
+<strong>结果分析：</strong>50% 准确率比随机猜测（33%）好一些，但远低于论文报告的 85-90%。可能原因：epoch 数太少、数据量小、验证/测试集太小（各12个）。
+</div>
+
+<hr>
+
+<h2>数据集说明</h2>
+
+<h3>Kaki（柿子）数据统计</h3>
+<table>
+<tr><th>分类类型</th><th>训练集</th><th>验证集</th><th>测试集</th><th>总计</th></tr>
+<tr><td>成熟度 (ripeness)</td><td>280</td><td>12</td><td>12</td><td>304</td></tr>
+<tr><td>硬度 (firmness)</td><td>280</td><td>12</td><td>12</td><td>304</td></tr>
+<tr><td>糖度 (sugar)</td><td>292</td><td>12</td><td>12</td><td>316</td></tr>
+</table>
+
+<h3>各水果数据量对比</h3>
+<table>
+<tr><th>水果</th><th>总样本</th><th>有标签</th><th>标注率</th></tr>
+<tr><td>Avocado</td><td>1,702</td><td>316</td><td>18.6%</td></tr>
+<tr><td>Kiwi</td><td>1,522</td><td>262</td><td>17.2%</td></tr>
+<tr><td>Kaki（柿子）</td><td>793</td><td>160</td><td>20.2%</td></tr>
+<tr><td>Mango</td><td>1,124</td><td>160</td><td>14.2%</td></tr>
+<tr><td>Papaya</td><td>548</td><td>120</td><td>21.9%</td></tr>
+</table>
+
+<p><strong>为什么只有部分样本有标签？</strong></p>
+<p>高光谱数据采集容易（只需拍照），但标注需要人工检查每个水果的实际状态，成本高、耗时长，所以只有约 15-22% 的样本有标签。</p>
+
+<hr>
+
+<h2>常用命令</h2>
+
+<pre><code># 查看 GPU 状态
+nvidia-smi
+
+# 激活虚拟环境
+conda activate hyperspectral
+
+# 设置 PYTHONPATH
+cd E:\DeepHS-Fruit\deephs_fruit
+set PYTHONPATH=%cd%
+
+# 启动 TensorBoard
+tensorboard --logdir=lightning_logs
+
+# 停止训练
+Ctrl+C
+
+# 强制停止 Python
+taskkill /F /IM python.exe
+
+# 查看保存的模型
+dir lightning_logs\version_0\checkpoints</code></pre>
+
+<hr>
+
+<h2>已修改文件清单</h2>
+
+<ol>
+<li><strong>classification/utils/confusion_matrix.py</strong> - 移除 plot_confusion_matrix 导入</li>
+<li><strong>classification/train.py</strong> - 修复 seed_everything、validation_epoch_end、test_epoch_end、DDP策略、Windows num_workers</li>
+<li><strong>classification/models/deephs_net.py</strong> - BatchNorm1d 替换为 LayerNorm</li>
+</ol>
+
+<hr>
+
+<h2>后续优化建议</h2>
+
+<ol>
+<li>增加训练轮数到 200-500 epoch</li>
+<li>尝试更大的 batch_size（如果显存允许）</li>
+<li>调整学习率（0.001, 0.0001）</li>
+<li>下载并训练 Avocado 或 Kiwi（数据量更大）</li>
+<li>尝试训练硬度或糖度预测模型</li>
+<li>尝试 --model hyve（HyVE 模型）</li>
+</ol>
+
+<hr>
+
+<p>文档创建时间：2026-04-15</p>
+
+</body>
+</html>

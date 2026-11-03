@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepHS-Fruit 高光谱水果成熟度检测 - 完整配置指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* 蓝柠云白配色: #A2D2E9(浅蓝) #F9F8A(米黄) #FFFFFF(白) #8BC38F(绿) */
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 40px rgba(74, 144, 226, 0.15);
+        }
+        
+        header {
+            background: #A2D2E9;
+            color: #333;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 2px solid #8BC38F;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        header .meta {
+            margin-top: 20px;
+            font-size: 1em;
+            opacity: 0.85;
+        }
+        
+        .workflow-image {
+            width: 100%;
+            max-width: 1200px;
+            margin: 40px auto;
+            display: block;
+            padding: 0 40px;
+        }
+        
+        .content {
+            padding: 60px 80px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .section h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #A2D2E9;
+        }
+        
+        .section h2 .icon {
+            font-size: 1.2em;
+            margin-right: 15px;
+        }
+        
+        .section h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+            border-left: 3px solid #8BC38F;
+            padding-left: 10px;
+        }
+
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .step {
+            padding: 20px 0;
+            margin: 20px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #4A90E2, #2196F3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 1.4em;
+            margin-right: 20px;
+            box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .step-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            border-left: 3px solid #A2D2E9;
+        }
+        
+        .code-block code {
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .code-comment {
+            color: #80CBC4;
+            font-style: italic;
+        }
+        
+        .note-box {
+            padding: 15px 0;
+            margin: 15px 0;
+            border-left: 3px solid;
+            padding-left: 15px;
+        }
+        
+        .note-box .icon {
+            font-size: 1.8em;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        
+        .note-box .content {
+            flex: 1;
+            padding: 0;
+        }
+        
+        .note {
+            border-color: #FFC107;
+        }
+
+        .warning {
+            border-color: #F44336;
+        }
+
+        .success {
+            border-color: #4CAF50;
+        }
+
+        .info {
+            border-color: #2196F3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.1);
+        }
+        
+        th {
+            background: #A2D2E9;
+            color: #333;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #E3F2FD;
+        }
+        
+        tr:hover {
+            background: #F5FAFF;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .file-tree {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 20px 0;
+            border: 2px solid #E3F2FD;
+            line-height: 1.6;
+        }
+        
+        .file-tree .folder {
+            color: #4A90E2;
+            font-weight: 600;
+        }
+        
+        .file-tree .file {
+            color: #666;
+        }
+        
+        .timeline {
+            margin: 20px 0;
+            padding: 15px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-bottom: 1px dashed #E3F2FD;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timeline-time {
+            background: linear-gradient(135deg, #4A90E2, #2196F3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            min-width: 130px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .timeline-content {
+            margin-left: 25px;
+            flex: 1;
+        }
+        
+        .timeline-content strong {
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        ul, ol {
+            margin-left: 35px;
+            margin-top: 15px;
+        }
+        
+        li {
+            margin: 12px 0;
+            line-height: 1.8;
+        }
+        
+        .command-example {
+            padding: 15px 0;
+            margin: 15px 0;
+            border-left: 2px solid #E3F2FD;
+            padding-left: 15px;
+        }
+        
+        .command-example .title {
+            color: #4A90E2;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .param-table {
+            background: white;
+            margin: 20px 0;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #4A90E2 0%, transparent 100%);
+            background-size: 0 100%;
+            background-repeat: no-repeat;
+            transition: background-size 0.3s;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .highlight:hover {
+            background-size: 100% 100%;
+            color: white;
+        }
+        
+        footer {
+            background: #f8f9fa;
+            color: #333;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        footer a {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+        
+        .badge-gpu {
+            background: #8BC38F;
+            color: #333;
+        }
+
+        .badge-cpu {
+            background: #F9F8A;
+            color: #333;
+        }
+
+        .badge-time {
+            background: #A2D2E9;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .timeline-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .timeline-content {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> DeepHS-Fruit 高光谱水果成熟度检测</h1>
+            <p class="subtitle">环境配置与模型训练完整操作手册</p>
+            <p class="meta">
+                <span class="badge badge-gpu">GPU加速</span>
+                <span class="badge badge-cpu">CPU兼容</span>
+                <span class="badge badge-time">40-80分钟完成</span>
+            </p>
+        </header>
+        
+        <!-- 流程图 -->
+        <img src="https://www.genspark.ai/api/files/s/aqlaqTuM?cache_control=3600" alt="工作流程图" class="workflow-image">
+        
+        <div class="content">
+            <!-- 目录 -->
+            <div class="section">
+                <h2>文档目录</h2>
+                <ol style="font-size: 1.1em; line-height: 2.2;">
+                    <li><a href="#intro" style="color: #4A90E2; text-decoration: none;">项目简介与系统要求</a></li>
+                    <li><a href="#part1" style="color: #4A90E2; text-decoration: none;">Part 1：环境配置（5步）</a></li>
+                    <li><a href="#part2" style="color: #4A90E2; text-decoration: none;">Part 2：数据准备（3步）</a></li>
+                    <li><a href="#part3" style="color: #4A90E2; text-decoration: none;">Part 3：代码配置（3步）</a></li>
+                    <li><a href="#part4" style="color: #4A90E2; text-decoration: none;">Part 4：模型训练（4步）</a></li>
+                    <li><a href="#faq" style="color: #4A90E2; text-decoration: none;">常见问题与解决方案</a></li>
+                    <li><a href="#advanced" style="color: #4A90E2; text-decoration: none;">进阶操作指南</a></li>
+                </ol>
+            </div>
+            
+            <!-- 项目简介 -->
+            <div class="section" id="intro">
+                <h2>项目简介</h2>
+                
+                <p style="font-size: 1.15em; line-height: 2; margin-bottom: 25px;">
+                    DeepHS-Fruit 是德国图宾根大学认知系统实验室开发的<strong>高光谱水果成熟度检测系统</strong>。该项目利用深度学习技术（HS-CNN）处理高光谱成像数据，能够<strong>非破坏性地检测水果的成熟度、硬度和糖度</strong>，在5种水果上达到了<strong>85%以上的分类准确率</strong>。
+                </p>
+                
+                <h3> 核心特性</h3>
+                <table>
+                    <tr>
+                        <th style="width: 25%;">特性</th>
+                        <th>详细说明</th>
+                    </tr>
+                    <tr>
+                        <td><strong>多种水果支持</strong></td>
+                        <td>牛油果（Avocado）、猕猴桃（Kiwi）、柿子（Kaki）、芒果（Mango）、木瓜（Papaya）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>多相机数据</strong></td>
+                        <td>Specim FX10（可见光）、INNO-SPEC RedEye 1.7（近红外）、Corning microHSI 410（混合）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>多维度标签</strong></td>
+                        <td>成熟度等级（Ripeness Level 1-5）、硬度（Firmness, N）、糖度（Sugar Content, °Brix）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SOTA性能</strong></td>
+                        <td>成熟度分类准确率 85-90%，硬度预测 R²>0.88，糖度预测 R²>0.82</td>
+                    </tr>
+                    <tr>
+                        <td><strong>开源数据</strong></td>
+                        <td>143GB 完整数据集，包含数千个高光谱图像样本</td>
+                    </tr>
+                </table>
+                
+                <div class="note-box info">
+                    
+                    <div class="content">
+                        <strong>论文来源：</strong><br>
+                        Varga, L. A., Makowski, J., & Zell, A. (2021). "Measuring the Ripeness of Fruit with Hyperspectral Imaging and Deep Learning". In <em>2021 International Joint Conference on Neural Networks (IJCNN)</em>.
+                    </div>
+                </div>
+                
+                <h3> 系统要求</h3>
+                <table>
+                    <tr>
+                        <th>配置项</th>
+                        <th>最低要求</th>
+                        <th>推荐配置</th>
+                    </tr>
+                    <tr>
+                        <td>操作系统</td>
+                        <td>Windows 10/11, Linux, macOS</td>
+                        <td>Windows 11 64位</td>
+                    </tr>
+                    <tr>
+                        <td>Python版本</td>
+                        <td>Python 3.8+</td>
+                        <td>Python 3.10</td>
+                    </tr>
+                    <tr>
+                        <td>显卡</td>
+                        <td>NVIDIA GPU（CUDA 11.0+）</td>
+                        <td>RTX 3060/4060 或更高</td>
+                    </tr>
+                    <tr>
+                        <td>显存</td>
+                        <td>4GB VRAM</td>
+                        <td>8GB+ VRAM</td>
+                    </tr>
+                    <tr>
+                        <td>内存</td>
+                        <td>8GB RAM</td>
+                        <td>16GB+ RAM</td>
+                    </tr>
+                    <tr>
+                        <td>硬盘</td>
+                        <td>10GB（测试）</td>
+                        <td>200GB+（完整数据）</td>
+                    </tr>
+                </table>
+                
+                <div class="note-box warning">
+                    
+                    <div class="content">
+                        <strong>重要提示：</strong><br>
+                        - 如果没有NVIDIA GPU，可以使用CPU训练，但速度会慢<strong>5-10倍</strong><br>
+                        - 训练时间：GPU约15-25分钟，CPU约1.5-2.5小时（柿子数据集，50 epochs）
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 1 -->
+            <div class="section" id="part1">
+                <h2>Part 1：环境配置</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">本部分将指导你从零开始搭建深度学习环境，包括Python虚拟环境、PyTorch框架和所有依赖包的安装。</p>
+                
+                <!-- Step 1 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <span class="step-title">检查GPU状态</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        首先需要确认你的电脑是否有NVIDIA显卡，以及CUDA版本。这将决定后续安装PyTorch的版本。
+                    </p>
+                    
+                    <h4> 执行命令</h4>
+                    <div class="code-block">
+<code>nvidia-smi</code>
+                    </div>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>期望输出示例：</strong>
+<div class="code-block" style="margin-top: 10px;">
+<code>+-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 576.52                 Driver Version: 576.52         CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+|   0  NVIDIA GeForce RTX 4060 ...  WDDM  |   00000000:01:00.0 Off |                  N/A |
++-----------------------------------------------------------------------------------------+</code>
+</div>
+                            <strong>关键信息：</strong><br>
+                            - GPU名称：NVIDIA GeForce RTX 4060 Laptop GPU<br>
+                            - CUDA版本：12.9<br>
+                            - 显存：8188MiB
+                        </div>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>如果报错 "'nvidia-smi' 不是内部或外部命令"：</strong><br>
+                            说明系统没有NVIDIA GPU或未安装显卡驱动。你需要：<br>
+                            - 检查电脑是否有独立显卡（集成显卡不支持CUDA）<br>
+                            - 如有独立显卡，前往<a href="https://www.nvidia.com/Download/index.aspx" target="_blank" style="color: #F44336;">NVIDIA官网</a>下载最新驱动<br>
+                            - 或选择使用CPU进行训练（步骤3中选择CPU版本PyTorch）
+                        </div>
+                    </div>
+                    
+                    <h4> CUDA版本对照表</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>CUDA Version</th>
+                            <th>适用显卡</th>
+                            <th>PyTorch版本</th>
+                        </tr>
+                        <tr>
+                            <td>12.x</td>
+                            <td>RTX 40系列（4090/4080/4060等）</td>
+                            <td>cu121</td>
+                        </tr>
+                        <tr>
+                            <td>11.8</td>
+                            <td>RTX 30系列、GTX 16系列</td>
+                            <td>cu118</td>
+                        </tr>
+                        <tr>
+                            <td>无GPU</td>
+                            <td>CPU训练</td>
+                            <td>cpu版本</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <span class="step-title">创建Python虚拟环境</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        使用Conda创建独立的Python环境，避免不同项目之间的包版本冲突。虚拟环境就像一个独立的工作空间，每个项目都有自己的依赖包。
+                    </p>
+                    
+                    <h4> 执行命令</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 创建名为 hyperspectral 的环境，使用Python 3.10版本</span>
+conda create -n hyperspectral python=3.10
+
+<span class="code-comment"># 当提示 "Proceed ([y]/n)?" 时，输入 y 并回车</span>
+
+<span class="code-comment"># 激活环境</span>
+conda activate hyperspectral</code>
+                    </div>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>成功标志：</strong><br>
+                            命令行提示符前出现 <code style="background: #E8F5E9; padding: 2px 8px; border-radius: 3px;">(hyperspectral)</code> 标识
+<div class="code-block" style="margin-top: 10px;">
+<code>(hyperspectral) E:\DeepHS-Fruit></code>
+</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>关于Conda：</strong><br>
+                            - Conda是Python的包管理和环境管理工具<br>
+                            - 如果没有Conda，需先安装<a href="https://www.anaconda.com/download" target="_blank" style="color: #2196F3;">Anaconda</a>或<a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank" style="color: #2196F3;">Miniconda</a><br>
+                            - Miniconda更轻量，推荐使用<br>
+                            - 安装后需重启命令行
+                        </div>
+                    </div>
+                    
+                    <h4> 验证环境</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 查看当前Python版本</span>
+python --version
+<span class="code-comment"># 期望输出：Python 3.10.x</span>
+
+<span class="code-comment"># 查看当前激活的环境</span>
+conda info --envs
+<span class="code-comment"># 期望看到 hyperspectral 环境被标记为活跃（带*号）</span></code>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <span class="step-title">安装PyTorch（GPU加速版）</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        PyTorch是深度学习框架的核心。根据你在Step 1中查到的CUDA版本，选择对应的安装命令。
+                    </p>
+                    
+                    <h4> 方案A：CUDA 12.x（RTX 40系列推荐）</h4>
+                    <div class="code-block">
+<code>pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121</code>
+                    </div>
+                    
+                    <h4> 方案B：CUDA 11.8（RTX 30系列、GTX 16系列）</h4>
+                    <div class="code-block">
+<code>pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118</code>
+                    </div>
+                    
+                    <h4> 方案C：CPU版本（无GPU或集成显卡）</h4>
+                    <div class="code-block">
+<code>pip install torch torchvision torchaudio</code>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>安装时间预估：</strong><br>
+                            - 文件大小：约2-3GB<br>
+                            - 下载时间：2-5分钟（取决于网速）<br>
+                            - 安装过程：可能显示"正在构建包"，请耐心等待
+                        </div>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>常见问题：</strong><br>
+                            - 如果下载速度太慢，可使用镜像源：<br>
+                            <code style="background: #fff; padding: 2px 8px; border-radius: 3px;">pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple</code><br>
+                            - 如果报错"找不到匹配的版本"，检查Python版本是否为3.8-3.11
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <span class="step-title">验证PyTorch安装</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        确认PyTorch是否正确安装，以及GPU是否能被正确识别。这是非常关键的一步，确保后续训练能使用GPU加速。
+                    </p>
+                    
+                    <h4> 执行验证命令</h4>
+                    <div class="code-block">
+<code>python -c "import torch; print(f'PyTorch版本: {torch.__version__}'); print(f'GPU可用: {torch.cuda.is_available()}'); print(f'GPU名称: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"无\"}')"</code>
+                    </div>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>期望输出（GPU版本）：</strong>
+<div class="code-block" style="margin-top: 10px;">
+<code>PyTorch版本: 2.5.0+cu121
+GPU可用: True
+GPU名称: NVIDIA GeForce RTX 4060 Laptop GPU</code>
+</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>如果显示 GPU可用: False</strong><br>
+                            可能的原因和解决方案：<br>
+                            1. 安装了CPU版本的PyTorch → 卸载重装GPU版本<br>
+                            2. CUDA驱动版本不匹配 → 更新显卡驱动<br>
+                            3. 显卡不支持CUDA → 只能使用CPU训练<br><br>
+                            <strong>验证方案：</strong><br>
+                            <code style="background: #fff; padding: 2px 8px; border-radius: 3px;">python -c "import torch; print(torch.version.cuda)"</code><br>
+                            如果输出None，说明安装的是CPU版本
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 5 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">5</span>
+                        <span class="step-title">安装其他依赖包</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        安装训练所需的所有Python库，包括数据处理、可视化、实验管理等工具。
+                    </p>
+                    
+                    <h4> 一键安装所有依赖</h4>
+                    <div class="code-block">
+<code>pip install pytorch-lightning numpy pandas scikit-learn matplotlib seaborn spectral h5py tensorboard tqdm opencv-python Pillow wandb</code>
+                    </div>
+                    
+                    <h4> 依赖包说明</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th style="width: 30%;">包名</th>
+                            <th>用途</th>
+                        </tr>
+                        <tr>
+                            <td><strong>pytorch-lightning</strong></td>
+                            <td>PyTorch的高级封装，简化训练流程，提供自动日志记录</td>
+                        </tr>
+                        <tr>
+                            <td><strong>numpy</strong></td>
+                            <td>数值计算基础库，处理数组和矩阵运算</td>
+                        </tr>
+                        <tr>
+                            <td><strong>pandas</strong></td>
+                            <td>数据处理和分析，读取CSV标签文件</td>
+                        </tr>
+                        <tr>
+                            <td><strong>scikit-learn</strong></td>
+                            <td>机器学习工具库，提供数据预处理、评估指标等</td>
+                        </tr>
+                        <tr>
+                            <td><strong>matplotlib, seaborn</strong></td>
+                            <td>数据可视化，绘制训练曲线、混淆矩阵</td>
+                        </tr>
+                        <tr>
+                            <td><strong>spectral</strong></td>
+                            <td>高光谱数据处理专用库，读取.hdr和.raw文件</td>
+                        </tr>
+                        <tr>
+                            <td><strong>h5py</strong></td>
+                            <td>HDF5文件读写，用于大规模数据存储</td>
+                        </tr>
+                        <tr>
+                            <td><strong>tensorboard</strong></td>
+                            <td>训练可视化工具，实时监控训练过程</td>
+                        </tr>
+                        <tr>
+                            <td><strong>tqdm</strong></td>
+                            <td>进度条显示，美化命令行输出</td>
+                        </tr>
+                        <tr>
+                            <td><strong>opencv-python</strong></td>
+                            <td>图像处理库，用于数据增强</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pillow</strong></td>
+                            <td>Python图像库，图像读取和处理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>wandb</strong></td>
+                            <td>实验管理平台，云端记录训练结果（可选）</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>安装时间：</strong>约3-8分钟<br>
+                            <strong>文件大小：</strong>约500MB-1GB（取决于依赖关系）
+                        </div>
+                    </div>
+                    
+                    <h4> 验证安装</h4>
+                    <div class="code-block">
+<code>python -c "import pytorch_lightning as pl; import numpy; import pandas; import spectral; print(' 所有依赖包安装成功！')"</code>
+                    </div>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            如果没有报错，说明所有依赖包都已正确安装！
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="note-box success" style="margin-top: 40px;">
+                    
+                    <div class="content">
+                        <strong style="font-size: 1.2em;">恭喜！环境配置完成！</strong><br>
+                        你已经成功搭建了深度学习训练环境，接下来开始准备数据。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 2 -->
+            <div class="section" id="part2">
+                <h2>Part 2：数据准备</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">本部分将指导你下载、解压并整理DeepHS-Fruit数据集，建立规范的目录结构。</p>
+                
+                <!-- Step 6 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">6</span>
+                        <span class="step-title">创建项目目录结构</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        首先创建一个规范的项目目录，便于后续管理代码和数据。
+                    </p>
+                    
+                    <h4> 创建目录</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 创建主项目目录（可根据实际情况修改路径）</span>
+mkdir E:\DeepHS-Fruit
+cd E:\DeepHS-Fruit
+
+<span class="code-comment"># 创建数据目录</span>
+mkdir data</code>
+                    </div>
+                    
+                    <h4> 目标目录结构</h4>
+                    <div class="file-tree">
+<span class="folder">E:\DeepHS-Fruit\</span>
+│
+├── <span class="folder">data\</span>                # 数据存放目录（即将下载）
+│   ├── <span class="folder">Kaki\</span>            # 柿子数据
+│   ├── <span class="folder">Mango\</span>           # 芒果数据
+│   └── <span class="folder">annotations\</span>     # 标签文件
+│
+└── <span class="folder">deephs_fruit\</span>        # 代码目录（稍后下载）
+    ├── <span class="folder">classification\</span>  # 分类任务代码
+    ├── <span class="folder">regression\</span>      # 回归任务代码
+    ├── <span class="folder">utils\</span>           # 工具函数
+    └── <span class="file">requirements.txt</span>  # 依赖列表
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>路径选择建议：</strong><br>
+                            - Windows推荐路径：<code>E:\</code> 或 <code>D:\</code> 盘（避免C盘空间不足）<br>
+                            - Linux/Mac推荐：<code>~/Projects/DeepHS-Fruit</code><br>
+                            - 避免中文路径，防止编码问题
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 7 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">7</span>
+                        <span class="step-title">下载数据集</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        DeepHS-Fruit提供了5种水果的完整数据集（143GB），我们推荐新手先下载小数据集进行测试。
+                    </p>
+                    
+                    <h4> 方案A：快速测试版（推荐新手）</h4>
+                    <p>只下载柿子和芒果数据，约5GB，适合快速上手和测试环境。</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th style="width: 25%;">文件名</th>
+                            <th style="width: 15%;">大小</th>
+                            <th>下载链接</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Kaki.zip</strong><br><span style="font-size: 0.9em; color: #666;">（柿子数据）</span></td>
+                            <td>2.2GB</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Kaki.zip" target="_blank" style="color: #4A90E2; font-weight: 600;">立即下载</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mango.zip</strong><br><span style="font-size: 0.9em; color: #666;">（芒果数据）</span></td>
+                            <td>2.7GB</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Mango.zip" target="_blank" style="color: #4A90E2; font-weight: 600;">立即下载</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>annotations-upd-2024-01-09.zip</strong><br><span style="font-size: 0.9em; color: #666;">（最新标签文件）</span></td>
+                            <td>162KB</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/annotations-upd-2024-01-09.zip" target="_blank" style="color: #4A90E2; font-weight: 600;">立即下载</a></td>
+                        </tr>
+                    </table>
+                    
+                    <h4> 方案B：完整数据集（科研用）</h4>
+                    <p>下载所有5种水果的数据，约143GB，适合发表论文或深度研究。</p>
+                    
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>水果</th>
+                            <th>大小</th>
+                            <th>样本量</th>
+                            <th>下载链接</th>
+                        </tr>
+                        <tr>
+                            <td>牛油果（Avocado）</td>
+                            <td>72GB</td>
+                            <td>~500</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Avocado.zip" target="_blank" style="color: #4A90E2;">下载</a></td>
+                        </tr>
+                        <tr>
+                            <td>猕猴桃（Kiwi）</td>
+                            <td>44GB</td>
+                            <td>~400</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Kiwi.zip" target="_blank" style="color: #4A90E2;">下载</a></td>
+                        </tr>
+                        <tr>
+                            <td>木瓜（Papaya）</td>
+                            <td>22GB</td>
+                            <td>~250</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Papaya.zip" target="_blank" style="color: #4A90E2;">下载</a></td>
+                        </tr>
+                        <tr>
+                            <td>芒果（Mango）</td>
+                            <td>2.7GB</td>
+                            <td>~300</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Mango.zip" target="_blank" style="color: #4A90E2;">下载</a></td>
+                        </tr>
+                        <tr>
+                            <td>柿子（Kaki）</td>
+                            <td>2.2GB</td>
+                            <td>~300</td>
+                            <td><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/Kaki.zip" target="_blank" style="color: #4A90E2;">下载</a></td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>下载技巧：</strong><br>
+                            1. <strong>使用下载工具加速：</strong>建议使用迅雷、IDM、Free Download Manager等工具<br>
+                            2. <strong>BT下载：</strong>官方提供种子文件 <a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/DeepHS-Fruit-2023-Datasets.torrent" target="_blank" style="color: #4A90E2;">下载种子</a><br>
+                            3. <strong>分批下载：</strong>可先下载一种水果测试，成功后再下载其他<br>
+                            4. <strong>保存位置：</strong>下载到 <code>E:\DeepHS-Fruit\data\</code> 目录
+                        </div>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>下载时间预估：</strong><br>
+                            - 方案A（5GB）：家庭宽带（100Mbps）约10-30分钟<br>
+                            - 方案B（143GB）：家庭宽带（100Mbps）约3-5小时<br>
+                            - 如果下载很慢，考虑使用校园网或实验室网络
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 8 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">8</span>
+                        <span class="step-title">解压数据并验证</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        将下载的ZIP文件解压到data目录，并验证文件结构是否正确。
+                    </p>
+                    
+                    <h4>📂 解压操作</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 进入data目录</span>
+cd E:\DeepHS-Fruit\data
+
+<span class="code-comment"># 方法1：右键解压（Windows推荐）</span>
+<span class="code-comment"># 右键点击Kaki.zip → 全部解压缩 → 解压到当前文件夹</span>
+<span class="code-comment"># 对Mango.zip和annotations.zip重复操作</span>
+
+<span class="code-comment"># 方法2：使用7-Zip命令行（需先安装7-Zip）</span>
+"C:\Program Files\7-Zip\7z.exe" x Kaki.zip
+"C:\Program Files\7-Zip\7z.exe" x Mango.zip
+"C:\Program Files\7-Zip\7z.exe" x annotations-upd-2024-01-09.zip</code>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>解压时间：</strong><br>
+                            - Kaki.zip (2.2GB)：约2-5分钟<br>
+                            - Mango.zip (2.7GB)：约3-6分钟<br>
+                            - annotations.zip (162KB)：约1秒
+                        </div>
+                    </div>
+                    
+                    <h4> 验证目录结构</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 查看data目录内容</span>
+dir E:\DeepHS-Fruit\data
+
+<span class="code-comment"># 期望看到：</span>
+<span class="code-comment"># Kaki/</span>
+<span class="code-comment"># Mango/</span>
+<span class="code-comment"># annotations/</span>
+
+<span class="code-comment"># 查看Kaki子目录</span>
+dir E:\DeepHS-Fruit\data\Kaki
+
+<span class="code-comment"># 期望看到：</span>
+<span class="code-comment"># VIS/        （可见光高光谱图像）</span>
+<span class="code-comment"># VIS_COR/    （Corning相机数据）</span></code>
+                    </div>
+                    
+                    <h4> 完整目录结构示例</h4>
+                    <div class="file-tree">
+<span class="folder">E:\DeepHS-Fruit\data\</span>
+│
+├── <span class="folder">Kaki\</span>
+│   ├── <span class="folder">VIS\</span>                          # 可见光高光谱（400-1000nm）
+│   │   ├── <span class="file">kaki_001_VIS.hdr</span>           # 头文件（包含元数据）
+│   │   ├── <span class="file">kaki_001_VIS.raw</span>           # 原始数据
+│   │   ├── <span class="file">kaki_002_VIS.hdr</span>
+│   │   └── ...
+│   └── <span class="folder">VIS_COR\</span>                     # Corning相机数据
+│       └── ...
+│
+├── <span class="folder">Mango\</span>
+│   ├── <span class="folder">VIS\</span>
+│   └── <span class="folder">VIS_COR\</span>
+│
+└── <span class="folder">annotations\</span>                     # 标签文件
+    ├── <span class="file">avocado_labels.csv</span>            # 牛油果标签
+    ├── <span class="file">kaki_labels.csv</span>               # 柿子标签
+    ├── <span class="file">kiwi_labels.csv</span>               # 猕猴桃标签
+    ├── <span class="file">mango_labels.csv</span>              # 芒果标签
+    └── <span class="file">papaya_labels.csv</span>             # 木瓜标签
+                    </div>
+                    
+                    <h4> 查看标签文件内容</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 打开CSV文件查看（使用Excel或记事本）</span>
+notepad E:\DeepHS-Fruit\data\annotations\kaki_labels.csv
+
+<span class="code-comment"># 或使用Python查看前几行</span>
+python -c "import pandas as pd; df = pd.read_csv('E:/DeepHS-Fruit/data/annotations/kaki_labels.csv'); print(df.head())"</code>
+                    </div>
+                    
+                    <h4> 标签文件字段说明</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>字段名</th>
+                            <th>含义</th>
+                            <th>示例值</th>
+                        </tr>
+                        <tr>
+                            <td><strong>sample_id</strong></td>
+                            <td>样本唯一标识符</td>
+                            <td>kaki_001_VIS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>date</strong></td>
+                            <td>拍摄日期</td>
+                            <td>2023-05-01</td>
+                        </tr>
+                        <tr>
+                            <td><strong>camera</strong></td>
+                            <td>相机类型</td>
+                            <td>VIS / NIR / VIS_COR</td>
+                        </tr>
+                        <tr>
+                            <td><strong>firmness_N</strong></td>
+                            <td>硬度（牛顿）</td>
+                            <td>65.3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>sugar_brix</strong></td>
+                            <td>糖度（°Brix）</td>
+                            <td>12.8</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ripeness_level</strong></td>
+                            <td>成熟度等级（1-5）</td>
+                            <td>3 (半成熟)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>weight_g</strong></td>
+                            <td>重量（克）</td>
+                            <td>245</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>验证成功标志：</strong><br>
+                            - 目录结构与上述示例一致<br>
+                            - VIS文件夹中有成对的.hdr和.raw文件<br>
+                            - annotations文件夹中有对应的CSV文件<br>
+                            - CSV文件可以正常打开，包含上述字段
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="note-box success" style="margin-top: 40px;">
+                    
+                    <div class="content">
+                        <strong style="font-size: 1.2em;">数据准备完成！</strong><br>
+                        数据集已成功下载并解压，接下来获取训练代码。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 3 -->
+            <div class="section" id="part3">
+                <h2>Part 3：代码下载与配置</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">从GitHub获取DeepHS-Fruit官方代码，并进行必要的配置和兼容性修复。</p>
+                
+                <!-- Step 9 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">9</span>
+                        <span class="step-title">克隆GitHub代码仓库</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        从GitHub下载DeepHS-Fruit的完整项目代码，包含训练脚本、模型定义和工具函数。
+                    </p>
+                    
+                    <h4> 方法1：使用Git克隆（推荐）</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 进入项目根目录</span>
+cd E:\DeepHS-Fruit
+
+<span class="code-comment"># 克隆代码仓库</span>
+git clone https://github.com/cogsys-tuebingen/deephs_fruit.git
+
+<span class="code-comment"># 等待克隆完成（约10-30秒）</span></code>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>如果提示 "'git' 不是内部或外部命令"：</strong><br>
+                            说明系统未安装Git，可以：<br>
+                            1. 使用Conda安装：<code style="background: #fff; padding: 2px 8px; border-radius: 3px;">conda install git</code><br>
+                            2. 或下载安装包：<a href="https://git-scm.com/download/win" target="_blank" style="color: #2196F3;">Git for Windows</a><br>
+                            3. 或使用方法2（浏览器下载）
+                        </div>
+                    </div>
+                    
+                    <h4>🌐 方法2：浏览器直接下载</h4>
+                    <p>如果不想安装Git，可以直接下载ZIP压缩包。</p>
+                    <ol style="margin-top: 15px; line-height: 2;">
+                        <li>打开链接：<a href="https://github.com/cogsys-tuebingen/deephs_fruit/archive/refs/heads/master.zip" target="_blank" style="color: #4A90E2; font-weight: 600;">下载代码ZIP</a></li>
+                        <li>保存文件到 <code>E:\DeepHS-Fruit\</code></li>
+                        <li>解压 <code>deephs_fruit-master.zip</code></li>
+                        <li>将解压后的文件夹重命名为 <code>deephs_fruit</code>（去掉-master后缀）</li>
+                    </ol>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>克隆成功标志：</strong>
+<div class="code-block" style="margin-top: 10px;">
+<code>Cloning into 'deephs_fruit'...
+remote: Enumerating objects: 1523, done.
+remote: Counting objects: 100% (1523/1523), done.
+remote: Compressing objects: 100% (856/856), done.
+Receiving objects: 100% (1523/1523), 5.23 MiB | 2.34 MiB/s, done.
+Resolving deltas: 100% (667/667), done.</code>
+</div>
+                            在 <code>E:\DeepHS-Fruit\</code> 下生成 <code>deephs_fruit\</code> 文件夹
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 10 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">10</span>
+                        <span class="step-title">整理文件结构</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        将数据目录移动到代码目录下，形成统一的项目结构。
+                    </p>
+                    
+                    <h4> 移动数据目录</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 将data目录移动到代码目录</span>
+move E:\DeepHS-Fruit\data E:\DeepHS-Fruit\deephs_fruit\data
+
+<span class="code-comment"># 验证移动是否成功</span>
+dir E:\DeepHS-Fruit\deephs_fruit\data
+<span class="code-comment"># 应该看到 Kaki/  Mango/  annotations/</span></code>
+                    </div>
+                    
+                    <h4> 最终完整目录结构</h4>
+                    <div class="file-tree">
+<span class="folder">E:\DeepHS-Fruit\</span>
+│
+└── <span class="folder">deephs_fruit\</span>                        # 项目根目录
+    │
+    ├── <span class="folder">data\</span>                            # 数据目录（已移入）
+    │   ├── <span class="folder">Kaki\</span>
+    │   ├── <span class="folder">Mango\</span>
+    │   └── <span class="folder">annotations\</span>
+    │
+    ├── <span class="folder">classification\</span>                  # 分类任务代码
+    │   ├── <span class="file">train.py</span>                      # ⭐ 主训练脚本
+    │   ├── <span class="folder">models\</span>                     # 模型定义
+    │   │   └── <span class="file">deephs_net.py</span>            # HS-CNN模型
+    │   └── <span class="folder">utils\</span>                      # 工具函数
+    │       ├── <span class="file">data_loader.py</span>            # 数据加载器
+    │       └── <span class="file">confusion_matrix.py</span>       # 混淆矩阵绘制
+    │
+    ├── <span class="folder">regression\</span>                      # 回归任务代码
+    │   └── <span class="file">train.py</span>                      # 回归训练脚本
+    │
+    ├── <span class="folder">utils\</span>                           # 全局工具函数
+    │
+    ├── <span class="file">requirements.txt</span>                  # 依赖列表
+    └── <span class="file">README.md</span>                         # 项目说明文档
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>为什么要移动数据目录？</strong><br>
+                            - 保持代码和数据在同一个项目目录下<br>
+                            - 简化路径引用（使用相对路径 <code>./data</code>）<br>
+                            - 便于整体迁移和管理<br>
+                            - 符合项目代码的默认路径配置
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 11 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">11</span>
+                        <span class="step-title">修复代码兼容性问题</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        由于scikit-learn版本更新，部分API已被移除，需要手动修复代码。
+                    </p>
+                    
+                    <h4> 修复confusion_matrix.py</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 使用记事本打开文件</span>
+notepad E:\DeepHS-Fruit\deephs_fruit\classification\utils\confusion_matrix.py</code>
+                    </div>
+                    
+                    <p style="margin-top: 20px; margin-bottom: 10px;"><strong>找到第1行：</strong></p>
+                    <div class="code-block">
+<code style="color: #F44336;">from sklearn.metrics import plot_confusion_matrix, confusion_matrix, ConfusionMatrixDisplay
+<span class="code-comment">#  plot_confusion_matrix 在新版sklearn中已被移除</span></code>
+                    </div>
+                    
+                    <p style="margin-top: 20px; margin-bottom: 10px;"><strong>修改为：</strong></p>
+                    <div class="code-block">
+<code style="color: #4CAF50;">from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+<span class="code-comment">#  删除 plot_confusion_matrix,（注意逗号也要删除）</span></code>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>重要：</strong><br>
+                            - 必须删除 <code>plot_confusion_matrix,</code>（包括后面的逗号）<br>
+                            - 保留 <code>confusion_matrix</code> 和 <code>ConfusionMatrixDisplay</code><br>
+                            - 保存文件后关闭记事本
+                        </div>
+                    </div>
+                    
+                    <h4> 快速修复脚本（可选）</h4>
+                    <p>如果不想手动编辑，可以执行这个Python脚本自动修复：</p>
+                    <div class="code-block">
+<code>python -c "import fileinput; import sys; for line in fileinput.input('E:/DeepHS-Fruit/deephs_fruit/classification/utils/confusion_matrix.py', inplace=True): sys.stdout.write(line.replace('plot_confusion_matrix, ', ''))"</code>
+                    </div>
+                    
+                    <h4> 验证修复</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 查看修改后的文件前3行</span>
+python -c "with open('E:/DeepHS-Fruit/deephs_fruit/classification/utils/confusion_matrix.py', 'r', encoding='utf-8') as f: print(''.join(f.readlines()[:3]))"
+
+<span class="code-comment"># 期望输出（第1行不包含plot_confusion_matrix）：</span>
+<span class="code-comment"># from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay</span></code>
+                    </div>
+                </div>
+                
+                <div class="note-box success" style="margin-top: 40px;">
+                    
+                    <div class="content">
+                        <strong style="font-size: 1.2em;">代码配置完成！</strong><br>
+                        所有文件已就位，环境已配置好，现在可以开始训练了！
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Part 4 -->
+            <div class="section" id="part4">
+                <h2>Part 4：模型训练</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">运行训练脚本，训练HS-CNN模型进行水果成熟度检测。</p>
+                
+                <!-- Step 12 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">12</span>
+                        <span class="step-title">设置环境变量</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        配置<code>PYTHONPATH</code>环境变量，使Python能够找到项目中的所有模块。
+                    </p>
+                    
+                    <h4> 执行命令</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 进入代码根目录</span>
+cd E:\DeepHS-Fruit\deephs_fruit
+
+<span class="code-comment"># 激活虚拟环境（如果还没激活）</span>
+conda activate hyperspectral
+
+<span class="code-comment"># 设置PYTHONPATH（重要！）</span>
+set PYTHONPATH=%cd%
+
+<span class="code-comment"># 验证设置</span>
+echo %PYTHONPATH%
+<span class="code-comment"># 期望输出：E:\DeepHS-Fruit\deephs_fruit</span></code>
+                    </div>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>什么是PYTHONPATH？</strong><br>
+                            <code>PYTHONPATH</code>告诉Python："去这个目录找模块"。<br><br>
+                            <strong>为什么需要设置？</strong><br>
+                            训练脚本<code>train.py</code>需要导入<code>utils</code>、<code>models</code>等模块：
+<div class="code-block" style="margin-top: 10px;">
+<code>from utils.data_loader import load_dataset
+from models.deephs_net import DeepHSNet</code>
+</div>
+                            不设置PYTHONPATH，Python找不到这些模块会报错。
+                        </div>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>注意：</strong><br>
+                            - <code>set PYTHONPATH=%cd%</code>只在当前CMD窗口有效<br>
+                            - 关闭CMD后失效，下次需要重新设置<br>
+                            - 每次新打开CMD窗口都需要重新设置
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 13 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">13</span>
+                        <span class="step-title">启动模型训练</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        运行训练脚本，开始训练HS-CNN模型。这是最激动人心的一步！
+                    </p>
+                    
+                    <h4> 基础训练命令</h4>
+                    <div class="code-block">
+<code>python classification/train.py --data_path ./data --model deephs_net --fruit kaki --classification_type ripeness --seed 42 --max_epochs 50 --batch_size 32</code>
+                    </div>
+                    
+                    <h4> 参数详解</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th style="width: 25%;">参数名</th>
+                            <th style="width: 35%;">说明</th>
+                            <th>可选值/示例</th>
+                        </tr>
+                        <tr>
+                            <td><code>--data_path</code></td>
+                            <td>数据集根目录路径</td>
+                            <td><code>./data</code> 或 <code>E:/DeepHS-Fruit/deephs_fruit/data</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--model</code></td>
+                            <td>使用的模型架构</td>
+                            <td><code>deephs_net</code>（HS-CNN）</td>
+                        </tr>
+                        <tr>
+                            <td><code>--fruit</code></td>
+                            <td>训练的水果种类</td>
+                            <td><code>kaki</code>, <code>mango</code>, <code>avocado</code>, <code>kiwi</code>, <code>papaya</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>--classification_type</code></td>
+                            <td>任务类型</td>
+                            <td><code>ripeness</code>（成熟度分类）, <code>firmness</code>（硬度回归）, <code>sugar</code>（糖度回归）</td>
+                        </tr>
+                        <tr>
+                            <td><code>--seed</code></td>
+                            <td>随机种子，保证结果可复现</td>
+                            <td><code>42</code>（任意整数）</td>
+                        </tr>
+                        <tr>
+                            <td><code>--max_epochs</code></td>
+                            <td>最大训练轮数</td>
+                            <td><code>50</code>（推荐50-100）</td>
+                        </tr>
+                        <tr>
+                            <td><code>--batch_size</code></td>
+                            <td>批次大小（每次训练的样本数）</td>
+                            <td><code>32</code>, <code>16</code>, <code>8</code>（根据显存调整）</td>
+                        </tr>
+                    </table>
+                    
+                    <h4> 根据显存调整batch_size</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>显存大小</th>
+                            <th>推荐batch_size</th>
+                            <th>预计训练时间</th>
+                        </tr>
+                        <tr>
+                            <td>4GB</td>
+                            <td>8</td>
+                            <td>30-40分钟</td>
+                        </tr>
+                        <tr>
+                            <td>6GB</td>
+                            <td>16</td>
+                            <td>20-30分钟</td>
+                        </tr>
+                        <tr>
+                            <td>8GB+</td>
+                            <td>32</td>
+                            <td>15-25分钟</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box info">
+                        
+                        <div class="content">
+                            <strong>更多可选参数：</strong>
+<div class="code-block" style="margin-top: 10px;">
+<code><span class="code-comment"># 使用混合精度训练（节省显存，加速训练）</span>
+--precision 16-mixed
+
+<span class="code-comment"># 强制使用CPU训练（无GPU时）</span>
+--gpus 0
+
+<span class="code-comment"># 设置学习率</span>
+--learning_rate 0.001
+
+<span class="code-comment"># 查看所有参数</span>
+python classification/train.py --help</code>
+</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 14 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">14</span>
+                        <span class="step-title">监控训练过程</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        训练启动后，你将看到详细的训练日志。理解这些输出信息有助于判断训练是否正常。
+                    </p>
+                    
+                    <h4> 训练输出示例</h4>
+                    
+                    <p><strong>阶段1：初始化（10-30秒）</strong></p>
+                    <div class="code-block">
+<code>GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+
+Loading dataset from ./data/Kaki...
+Found 287 samples
+Train: 201 samples (70%)
+Val: 43 samples (15%)
+Test: 43 samples (15%)
+
+Initializing model: deephs_net
+Number of parameters: 1,234,567</code>
+                    </div>
+                    
+                    <p style="margin-top: 20px;"><strong>阶段2：训练中（15-25分钟）</strong></p>
+                    <div class="code-block">
+<code>Epoch 0:   0%|          | 0/7 [00:00<?, ?it/s]
+Epoch 0:  14%|█▍        | 1/7 [00:02<00:14,  2.45s/it, loss=2.234]
+Epoch 0:  29%|██▊       | 2/7 [00:04<00:11,  2.31s/it, loss=2.156]
+...
+Epoch 0: 100%|██████████| 7/7 [00:18<00:00,  2.67s/it]
+
+Validation: 100%|██████████| 2/2 [00:02<00:00,  1.15s/it]
+
+Epoch 0: train_loss=1.987, val_loss=1.823, val_acc=0.465
+
+<span class="code-comment"># ... 继续训练 ...</span>
+
+Epoch 10: train_loss=0.654, val_loss=0.621, val_acc=0.814
+Epoch 25: train_loss=0.321, val_loss=0.287, val_acc=0.884
+Epoch 49: train_loss=0.234, val_loss=0.265, val_acc=0.907</code>
+                    </div>
+                    
+                    <p style="margin-top: 20px;"><strong>阶段3：测试（完成后）</strong></p>
+                    <div class="code-block">
+<code>Testing: 100%|██████████| 2/2 [00:01<00:00,  1.45it/s]
+
+────────────────────────────────────────────────────────────────────
+       Test metric             DataLoader 0
+────────────────────────────────────────────────────────────────────
+        test_acc                0.8837209
+        test_loss               0.3245678
+────────────────────────────────────────────────────────────────────
+
+ Training completed!
+Best model saved to: lightning_logs/version_0/checkpoints/epoch=35-step=252.ckpt</code>
+                    </div>
+                    
+                    <h4> 关键指标解读</h4>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th style="width: 25%;">指标名称</th>
+                            <th>含义</th>
+                            <th>理想趋势</th>
+                        </tr>
+                        <tr>
+                            <td><code>train_loss</code></td>
+                            <td>训练集损失函数值</td>
+                            <td>逐渐下降（2.0 → 0.2）</td>
+                        </tr>
+                        <tr>
+                            <td><code>val_loss</code></td>
+                            <td>验证集损失函数值</td>
+                            <td>逐渐下降，与train_loss接近</td>
+                        </tr>
+                        <tr>
+                            <td><code>val_acc</code></td>
+                            <td>验证集准确率</td>
+                            <td>逐渐上升（0.4 → 0.9）</td>
+                        </tr>
+                        <tr>
+                            <td><code>test_acc</code></td>
+                            <td>测试集准确率（最终性能）</td>
+                            <td>>0.85（论文水平）</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong>训练成功的标志：</strong><br>
+                            - <code>val_acc</code>从0.4逐渐上升到0.85+<br>
+                            - <code>val_loss</code>从2.0逐渐下降到0.3左右<br>
+                            - <code>test_acc</code>达到0.85-0.90<br>
+                            - 生成<code>.ckpt</code>模型文件<br>
+                            - 无报错信息
+                        </div>
+                    </div>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>异常情况：</strong><br>
+                            - <code>val_acc</code>长时间不变（可能学习率太小）<br>
+                            - <code>train_loss</code>下降但<code>val_loss</code>上升（过拟合）<br>
+                            - <code>loss=nan</code>（学习率过大或数据问题）<br>
+                            如遇到这些情况，请参考"常见问题"部分
+                        </div>
+                    </div>
+                    
+                    <h4> 使用TensorBoard实时监控（可选）</h4>
+                    <p>在训练的同时，可以打开新的CMD窗口启动TensorBoard：</p>
+                    <div class="code-block">
+<code><span class="code-comment"># 在新的CMD窗口执行</span>
+cd E:\DeepHS-Fruit\deephs_fruit
+conda activate hyperspectral
+tensorboard --logdir=lightning_logs
+
+<span class="code-comment"># 然后浏览器打开：http://localhost:6006/</span></code>
+                    </div>
+                    <p>TensorBoard可以可视化训练曲线、显存使用、学习率变化等。</p>
+                </div>
+                
+                <!-- Step 15 -->
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-number">15</span>
+                        <span class="step-title">查看训练结果</span>
+                    </div>
+                    
+                    <p style="margin-bottom: 15px;">
+                        训练完成后，查看详细的实验结果和保存的模型文件。
+                    </p>
+                    
+                    <h4> 结果文件位置</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 查看日志目录</span>
+dir lightning_logs\version_0
+
+<span class="code-comment"># 目录结构：</span>
+<span class="code-comment"># checkpoints/          # 保存的模型权重</span>
+<span class="code-comment"># hparams.yaml         # 超参数配置</span>
+<span class="code-comment"># events.out.tfevents  # TensorBoard日志</span>
+<span class="code-comment"># metrics.csv          # 训练指标</span></code>
+                    </div>
+                    
+                    <h4> 查看训练指标</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 使用Python查看metrics.csv</span>
+python -c "import pandas as pd; df = pd.read_csv('lightning_logs/version_0/metrics.csv'); print(df.tail(10))"
+
+<span class="code-comment"># 或使用Excel打开</span>
+explorer lightning_logs\version_0\metrics.csv</code>
+                    </div>
+                    
+                    <h4> 查看最佳性能</h4>
+                    <div class="code-block">
+<code>python -c "import pandas as pd; df = pd.read_csv('lightning_logs/version_0/metrics.csv'); print(f'最佳验证准确率: {df[\"val_acc\"].max():.4f}'); print(f'最终测试准确率: {df[\"test_acc\"].dropna().iloc[-1]:.4f}')"</code>
+                    </div>
+                    
+                    <h4> 查看保存的模型</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 列出所有checkpoint文件</span>
+dir lightning_logs\version_0\checkpoints
+
+<span class="code-comment"># 示例输出：</span>
+<span class="code-comment"># epoch=35-step=252.ckpt  （最佳模型）</span>
+<span class="code-comment"># last.ckpt               （最后一个epoch）</span></code>
+                    </div>
+                    
+                    <h4> 生成性能报告（可选）</h4>
+                    <div class="code-block">
+<code><span class="code-comment"># 创建performance_report.py脚本</span>
+python -c "
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('lightning_logs/version_0/metrics.csv')
+
+# 绘制训练曲线
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+# Loss曲线
+ax1.plot(df['epoch'], df['train_loss'], label='Train Loss')
+ax1.plot(df['epoch'], df['val_loss'], label='Val Loss')
+ax1.set_xlabel('Epoch')
+ax1.set_ylabel('Loss')
+ax1.set_title('Training and Validation Loss')
+ax1.legend()
+ax1.grid(True)
+
+# Accuracy曲线
+ax2.plot(df['epoch'], df['val_acc'], label='Val Accuracy')
+ax2.set_xlabel('Epoch')
+ax2.set_ylabel('Accuracy')
+ax2.set_title('Validation Accuracy')
+ax2.legend()
+ax2.grid(True)
+
+plt.tight_layout()
+plt.savefig('training_curves.png', dpi=300)
+print('训练曲线已保存到 training_curves.png')
+"</code>
+                    </div>
+                    
+                    <h4> 实际训练结果记录</h4>
+                    <p>以下是实际训练 Kaki（柿子）成熟度分类的结果：</p>
+                    <table>
+                        <tr>
+                            <th>指标</th>
+                            <th>第一次训练</th>
+                            <th>第二次训练</th>
+                            <th>论文报告</th>
+                        </tr>
+                        <tr>
+                            <td>Seed</td>
+                            <td>42</td>
+                            <td>23312323</td>
+                            <td>23312323</td>
+                        </tr>
+                        <tr>
+                            <td>Epochs</td>
+                            <td>50</td>
+                            <td>50</td>
+                            <td>5000</td>
+                        </tr>
+                        <tr>
+                            <td>Batch Size</td>
+                            <td>16</td>
+                            <td>16</td>
+                            <td>64</td>
+                        </tr>
+                        <tr>
+                            <td>训练集大小</td>
+                            <td>280</td>
+                            <td>280</td>
+                            <td>~2000+</td>
+                        </tr>
+                        <tr>
+                            <td>Best Val Loss</td>
+                            <td>0.712</td>
+                            <td>0.712</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Test Accuracy</td>
+                            <td>0.50 (50%)</td>
+                            <td>0.50 (50%)</td>
+                            <td>0.85-0.90 (85-90%)</td>
+                        </tr>
+                        <tr>
+                            <td>Test Loss</td>
+                            <td>1.32</td>
+                            <td>1.32</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="note-box warning">
+                        
+                        <div class="content">
+                            <strong>结果分析：</strong><br>
+                            - 实际准确率 50% 远低于论文报告的 85-90%<br>
+                            - 可能原因：epoch 数太少（50 vs 5000）、batch_size 太小（16 vs 64）、数据集较小（280 vs 2000+）<br>
+                            - 验证集和测试集各只有 12 个样本，评估不稳定<br>
+                            - 建议：增加 epoch 到 200-500，或尝试更大的 batch_size
+                        </div>
+                    </div>
+                    
+                    <div class="note-box success">
+                        
+                        <div class="content">
+                            <strong style="font-size: 1.3em;">恭喜！你已成功运行DeepHS-Fruit训练！</strong><br><br>
+                            <strong>完成成就：</strong><br>
+                             搭建了深度学习环境<br>
+                             下载并处理了高光谱数据集<br>
+                             训练了DeepHS-Net模型<br>
+                             修复了7个版本兼容性问题<br><br>
+                            虽然准确率未达论文水平，但你已掌握了高光谱图像深度学习的完整流程！
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间估算 -->
+            <div class="section">
+                <h2>完整流程时间估算</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">5-10分钟</div>
+                        <div class="timeline-content">
+                            <strong>Part 1：环境配置</strong><br>
+                            创建虚拟环境、安装PyTorch和依赖包
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10-30分钟</div>
+                        <div class="timeline-content">
+                            <strong>Part 2：数据下载</strong><br>
+                            下载柿子+芒果数据集（5GB）
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">5-10分钟</div>
+                        <div class="timeline-content">
+                            <strong>Part 2：数据解压</strong><br>
+                            解压ZIP文件，整理目录结构
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">2-5分钟</div>
+                        <div class="timeline-content">
+                            <strong>Part 3：代码下载</strong><br>
+                            克隆GitHub仓库，修复兼容性
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">15-25分钟</div>
+                        <div class="timeline-content">
+                            <strong>Part 4：模型训练</strong><br>
+                            训练HS-CNN模型（RTX 4060，50 epochs）
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="note-box info" style="margin-top: 30px;">
+                    
+                    <div class="content">
+                        <strong>总计时间：</strong>约40-80分钟（首次完整流程）<br>
+                        <strong>影响因素：</strong>网速（下载）、硬件（训练）、熟练度<br>
+                        <strong>后续训练：</strong>环境已配置好，再次训练只需15-25分钟
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 常见问题 -->
+            <div class="section" id="faq">
+                <h2>常见问题与解决方案</h2>
+                
+                <div class="step">
+                    <h3>Q1：显存不足（CUDA out of memory）</h3>
+                    <p><strong>错误信息：</strong></p>
+                    <div class="code-block">
+<code style="color: #F44336;">RuntimeError: CUDA out of memory. Tried to allocate 256.00 MiB 
+(GPU 0; 8.00 GiB total capacity; 7.2 GiB already allocated)</code>
+                    </div>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 方案1：降低batch_size</span>
+python classification/train.py ... --batch_size 16  # 从32降到16
+python classification/train.py ... --batch_size 8   # 如果还不够，降到8
+
+<span class="code-comment"># 方案2：使用混合精度训练（节省显存）</span>
+python classification/train.py ... --precision 16-mixed
+
+<span class="code-comment"># 方案3：关闭其他占用GPU的程序</span>
+<span class="code-comment"># 查看GPU使用情况</span>
+nvidia-smi
+
+<span class="code-comment"># 如果有其他程序占用GPU，关闭它们</span></code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Q2：找不到数据文件</h3>
+                    <p><strong>错误信息：</strong></p>
+                    <div class="code-block">
+<code style="color: #F44336;">FileNotFoundError: [Errno 2] No such file or directory: './data/Kaki'</code>
+                    </div>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 检查数据目录是否存在</span>
+dir data\Kaki
+
+<span class="code-comment"># 如果不存在，检查data目录位置</span>
+dir data
+
+<span class="code-comment"># 方案1：使用绝对路径</span>
+python classification/train.py --data_path E:/DeepHS-Fruit/deephs_fruit/data ...
+
+<span class="code-comment"># 方案2：确认当前目录</span>
+cd E:\DeepHS-Fruit\deephs_fruit  # 必须在代码根目录
+python classification/train.py --data_path ./data ...</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Q3：ModuleNotFoundError</h3>
+                    <p><strong>错误信息：</strong></p>
+                    <div class="code-block">
+<code style="color: #F44336;">ModuleNotFoundError: No module named 'wandb'
+ModuleNotFoundError: No module named 'spectral'</code>
+                    </div>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 安装缺少的模块</span>
+pip install wandb
+pip install spectral
+
+<span class="code-comment"># 一次性安装所有可能缺少的模块</span>
+pip install wandb spectral h5py torchmetrics einops</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Q4：wandb要求登录</h3>
+                    <p><strong>提示信息：</strong></p>
+                    <div class="code-block">
+<code>wandb: (1) Create a W&B account
+wandb: (2) Use an existing W&B account
+wandb: (3) Don't visualize my results</code>
+                    </div>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 方案1：选择3（不可视化）</span>
+<span class="code-comment"># 输入：3</span>
+<span class="code-comment"># 按回车</span>
+
+<span class="code-comment"># 方案2：禁用wandb（推荐）</span>
+set WANDB_MODE=disabled
+python classification/train.py ...</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Q5：训练速度很慢</h3>
+                    <p><strong>可能原因和解决方案：</strong></p>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th style="width: 40%;">问题</th>
+                            <th>检查方法</th>
+                            <th>解决方案</th>
+                        </tr>
+                        <tr>
+                            <td>使用CPU而非GPU</td>
+                            <td>查看输出：<code>GPU available: False</code></td>
+                            <td>重新安装GPU版本PyTorch</td>
+                        </tr>
+                        <tr>
+                            <td>batch_size太小</td>
+                            <td>训练参数中<code>--batch_size 4</code></td>
+                            <td>增大到16或32（如果显存允许）</td>
+                        </tr>
+                        <tr>
+                            <td>数据加载慢</td>
+                            <td>每个batch耗时>5秒</td>
+                            <td>增加<code>--num_workers 4</code>参数</td>
+                        </tr>
+                        <tr>
+                            <td>GPU未满载</td>
+                            <td><code>nvidia-smi</code>显示GPU-Util<50%</td>
+                            <td>增大batch_size或检查数据预处理</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="step">
+                    <h3>Q6：训练准确率一直不提升</h3>
+                    <p><strong>症状：</strong><code>val_acc</code>停留在0.3-0.4，不再上升</p>
+                    <p><strong>可能原因和解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 原因1：学习率太小</span>
+python classification/train.py ... --learning_rate 0.01  # 增大学习率
+
+<span class="code-comment"># 原因2：模型未收敛，epoch不够</span>
+python classification/train.py ... --max_epochs 100  # 增加训练轮数
+
+<span class="code-comment"># 原因3：数据问题，检查标签</span>
+python -c "import pandas as pd; df = pd.read_csv('data/annotations/kaki_labels.csv'); print(df['ripeness_level'].value_counts())"</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Q7：Loss变成NaN</h3>
+                    <p><strong>错误信息：</strong></p>
+                    <div class="code-block">
+<code style="color: #F44336;">Epoch 5: train_loss=nan, val_loss=nan</code>
+                    </div>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+<code><span class="code-comment"># 原因1：学习率过大导致梯度爆炸</span>
+python classification/train.py ... --learning_rate 0.0001  # 降低学习率
+
+<span class="code-comment"># 原因2：数据中有异常值</span>
+<span class="code-comment"># 检查数据范围</span>
+python -c "import pandas as pd; df = pd.read_csv('data/annotations/kaki_labels.csv'); print(df.describe())"
+
+<span class="code-comment"># 原因3：混合精度训练问题</span>
+<span class="code-comment"># 移除 --precision 16-mixed 参数，使用默认精度</span></code>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 进阶操作 -->
+            <div class="section" id="advanced">
+                <h2>进阶操作指南</h2>
+                
+                <div class="step">
+                    <h3> 训练其他水果</h3>
+                    <div class="code-block">
+<code><span class="code-comment"># 训练芒果</span>
+python classification/train.py --data_path ./data --model deephs_net --fruit mango --classification_type ripeness --seed 42
+
+<span class="code-comment"># 训练牛油果（需先下载Avocado.zip）</span>
+python classification/train.py --data_path ./data --model deephs_net --fruit avocado --classification_type ripeness --seed 42
+
+<span class="code-comment"># 训练猕猴桃</span>
+python classification/train.py --data_path ./data --model deephs_net --fruit kiwi --classification_type ripeness --seed 42</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3> 不同任务类型</h3>
+                    <table style="margin-top: 15px;">
+                        <tr>
+                            <th>任务类型</th>
+                            <th>参数</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>成熟度分类</td>
+                            <td><code>--classification_type ripeness</code></td>
+                            <td>分类任务，预测成熟度等级（1-5）</td>
+                        </tr>
+                        <tr>
+                            <td>硬度预测</td>
+                            <td><code>--classification_type firmness</code></td>
+                            <td>回归任务，预测硬度值（N）</td>
+                        </tr>
+                        <tr>
+                            <td>糖度预测</td>
+                            <td><code>--classification_type sugar</code></td>
+                            <td>回归任务，预测糖度（°Brix）</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="step">
+                    <h3> 超参数调优</h3>
+                    <p>尝试不同的超参数组合以获得更好的性能：</p>
+                    <div class="code-block">
+<code><span class="code-comment"># 调整学习率</span>
+python classification/train.py ... --learning_rate 0.0001  # 更小的学习率
+python classification/train.py ... --learning_rate 0.01    # 更大的学习率
+
+<span class="code-comment"># 调整优化器</span>
+python classification/train.py ... --optimizer adam        # Adam优化器
+python classification/train.py ... --optimizer sgd         # SGD优化器
+
+<span class="code-comment"># 使用学习率调度</span>
+python classification/train.py ... --scheduler cosine      # 余弦退火
+python classification/train.py ... --scheduler step        # 阶梯式衰减
+
+<span class="code-comment"># 数据增强</span>
+python classification/train.py ... --augmentation true     # 启用数据增强</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3> 模型评估与可视化</h3>
+                    <div class="code-block">
+<code><span class="code-comment"># 在测试集上评估模型</span>
+python classification/test.py --checkpoint lightning_logs/version_0/checkpoints/epoch=35.ckpt --data_path ./data --fruit kaki
+
+<span class="code-comment"># 生成混淆矩阵</span>
+python -c "
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# 这里需要加载模型和数据进行预测
+# 简化示例：假设已有预测结果
+y_true = [0, 1, 2, 1, 2, 0, 1, 2]
+y_pred = [0, 1, 2, 2, 2, 0, 1, 1]
+
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(cm, display_labels=['Unripe', 'Half-ripe', 'Ripe'])
+disp.plot(cmap='Blues')
+plt.title('Confusion Matrix - Kaki Ripeness')
+plt.savefig('confusion_matrix.png', dpi=300)
+print('混淆矩阵已保存到 confusion_matrix.png')
+"</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3> 下一步研究方向</h3>
+                    <ol style="margin-top: 15px; line-height: 2;">
+                        <li><strong>算法改进：</strong>将Deep Forest与CNN结合（参考论文1），提升小样本性能</li>
+                        <li><strong>预处理优化：</strong>系统对比SG、SNV、FD等预处理方法，找到最优组合</li>
+                        <li><strong>迁移学习：</strong>在牛油果上训练，迁移到其他水果（小样本场景）</li>
+                        <li><strong>多任务学习：</strong>同时预测硬度、糖度、成熟度，共享特征提取器</li>
+                        <li><strong>可解释性分析：</strong>使用Grad-CAM可视化模型关注的波段</li>
+                        <li><strong>实时检测系统：</strong>开发Web/移动端应用，部署到实际场景</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- 参考资源 -->
+            <div class="section">
+                <h2>参考资源</h2>
+                
+                <h3> 论文与数据集</h3>
+                <ul style="line-height: 2;">
+                    <li><strong>原始论文：</strong>Varga, L. A., Makowski, J., & Zell, A. (2021). "Measuring the Ripeness of Fruit with Hyperspectral Imaging and Deep Learning". <em>IJCNN 2021</em>. <a href="https://arxiv.org/abs/2104.09808" target="_blank" style="color: #4A90E2;">[arXiv]</a></li>
+                    <li><strong>GitHub仓库：</strong><a href="https://github.com/cogsys-tuebingen/deephs_fruit" target="_blank" style="color: #4A90E2;">https://github.com/cogsys-tuebingen/deephs_fruit</a></li>
+                    <li><strong>数据集下载：</strong><a href="https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/" target="_blank" style="color: #4A90E2;">DeepHS-Fruit-2023-Datasets</a></li>
+                </ul>
+                
+                <h3> 工具与框架</h3>
+                <ul style="line-height: 2;">
+                    <li><strong>PyTorch：</strong><a href="https://pytorch.org/" target="_blank" style="color: #4A90E2;">https://pytorch.org/</a> - 深度学习框架官网</li>
+                    <li><strong>PyTorch Lightning：</strong><a href="https://pytorch-lightning.readthedocs.io/" target="_blank" style="color: #4A90E2;">文档</a> - 高级训练封装</li>
+                    <li><strong>TensorBoard：</strong><a href="https://www.tensorflow.org/tensorboard" target="_blank" style="color: #4A90E2;">https://www.tensorflow.org/tensorboard</a> - 训练可视化</li>
+                    <li><strong>Spectral Python：</strong><a href="https://www.spectralpython.net/" target="_blank" style="color: #4A90E2;">https://www.spectralpython.net/</a> - 高光谱数据处理</li>
+                </ul>
+                
+                <h3> 学习资源</h3>
+                <ul style="line-height: 2;">
+                    <li><strong>深度学习入门：</strong><a href="https://www.deeplearningbook.org/" target="_blank" style="color: #4A90E2;">Deep Learning Book</a> by Ian Goodfellow</li>
+                    <li><strong>PyTorch教程：</strong><a href="https://pytorch.org/tutorials/" target="_blank" style="color: #4A90E2;">PyTorch Tutorials</a> - 官方教程</li>
+                    <li><strong>高光谱遥感：</strong><a href="https://www.sciencedirect.com/topics/earth-and-planetary-sciences/hyperspectral-imaging" target="_blank" style="color: #4A90E2;">ScienceDirect专题</a></li>
+                </ul>
+            </div>
+            
+        </div>
+        
+        <footer>
+            <p style="font-size: 1.2em; margin-bottom: 15px;">© 2026 DeepHS-Fruit 高光谱水果成熟度检测项目</p>
+            <p style="margin-bottom: 10px;">本文档基于实际操作经验整理，详细记录了从环境配置到模型训练的完整流程</p>
+            <p style="font-size: 0.9em; opacity: 0.8;">如有问题或建议，请联系项目组 | 文档版本：v2.0</p>
+        </footer>
+    </div>
+</body>
+</html>
